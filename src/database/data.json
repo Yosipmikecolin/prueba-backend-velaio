@@ -1,8 +1,10 @@
 [
   {
+    "id": 1,
     "task": {
       "taskName": "Sacar al perro",
-      "dueDate": "2024-09-27"
+      "dueDate": "2024-09-27",
+      "completed": true
     },
     "people": [
       {

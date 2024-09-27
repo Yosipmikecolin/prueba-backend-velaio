@@ -39,30 +39,70 @@ export const controllerPOST = (req, res) => {
   });
 };
 
+export const controllerGET = (_req, res) => {
+  const filePath = path.join(__dirname, "..", "database", "data.json");
 
-export const controllerGET = (req, res) => {
-    // Define la ruta del archivo 'data.json' dentro de 'src/database'
-    const filePath = path.join(__dirname, '..', 'database', 'data.json');
-  
-    // Lee el archivo JSON
-    fs.readFile(filePath, 'utf8', (err, fileData) => {
+  fs.readFile(filePath, "utf8", (err, fileData) => {
+    if (err) {
+      console.error("Error al leer el archivo:", err);
+      return res.status(500).json({ error: "Error al leer las tareas" });
+    }
+
+    if (!fileData) {
+      return res.json([]);
+    }
+
+    try {
+      const json = JSON.parse(fileData);
+      res.json(json);
+    } catch (parseErr) {
+      console.error("Error al parsear JSON:", parseErr);
+      return res.status(500).json({ error: "Error al procesar los datos" });
+    }
+  });
+};
+
+export const controllerPUT = (req, res) => {
+  const { id } = req.params;
+  console.log("Updating task with ID:", req);
+
+  const filePath = path.join(__dirname, "..", "database", "data.json");
+
+  fs.readFile(filePath, "utf8", (err, fileData) => {
+    if (err) {
+      console.error("Error al leer el archivo:", err);
+      return res.status(500).json({ error: "Error al leer las tareas" });
+    }
+
+    if (!fileData) {
+      return res.status(404).json({ error: "No hay tareas disponibles" });
+    }
+
+    let json;
+    try {
+      json = JSON.parse(fileData);
+    } catch (parseErr) {
+      console.error("Error al parsear JSON:", parseErr);
+      return res.status(500).json({ error: "Error al procesar los datos" });
+    }
+
+    const taskIndex = json.findIndex((t) => t.id === parseInt(id));
+
+    if (taskIndex === -1) {
+      return res.status(404).json({ error: "Tarea no encontrada" });
+    }
+
+    json[taskIndex].task.completed = true;
+
+    fs.writeFile(filePath, JSON.stringify(json, null, 2), (err) => {
       if (err) {
-        console.error('Error al leer el archivo:', err);
-        return res.status(500).json({ error: 'Error al leer las tareas' });
+        console.error("Error al escribir el archivo:", err);
+        return res.status(500).json({ error: "Error al actualizar la tarea" });
       }
-  
-      // Si el archivo está vacío, devuelve un array vacío
-      if (!fileData) {
-        return res.json([]);
-      }
-  
-      // Parsear los datos y devolverlos en la respuesta
-      try {
-        const json = JSON.parse(fileData);
-        res.json(json);
-      } catch (parseErr) {
-        console.error('Error al parsear JSON:', parseErr);
-        return res.status(500).json({ error: 'Error al procesar los datos' });
-      }
+      res.json({
+        message: "Tarea actualizada con éxito",
+        task: json[taskIndex],
+      });
     });
-  };
+  });
+};
