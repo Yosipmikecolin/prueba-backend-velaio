@@ -38,3 +38,31 @@ export const controllerPOST = (req, res) => {
     });
   });
 };
+
+
+export const controllerGET = (req, res) => {
+    // Define la ruta del archivo 'data.json' dentro de 'src/database'
+    const filePath = path.join(__dirname, '..', 'database', 'data.json');
+  
+    // Lee el archivo JSON
+    fs.readFile(filePath, 'utf8', (err, fileData) => {
+      if (err) {
+        console.error('Error al leer el archivo:', err);
+        return res.status(500).json({ error: 'Error al leer las tareas' });
+      }
+  
+      // Si el archivo está vacío, devuelve un array vacío
+      if (!fileData) {
+        return res.json([]);
+      }
+  
+      // Parsear los datos y devolverlos en la respuesta
+      try {
+        const json = JSON.parse(fileData);
+        res.json(json);
+      } catch (parseErr) {
+        console.error('Error al parsear JSON:', parseErr);
+        return res.status(500).json({ error: 'Error al procesar los datos' });
+      }
+    });
+  };

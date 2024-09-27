@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "task": {
+      "taskName": "Sacar al perro",
+      "dueDate": "2024-09-27"
+    },
+    "people": [
+      {
+        "name": "Yosip",
+        "age": "Yosip",
+        "skills": [
+          "CSS",
+          "PHP",
+          "Design"
+        ]
+      }
+    ]
+  }
+]
