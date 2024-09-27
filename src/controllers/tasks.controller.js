@@ -20,8 +20,7 @@ export const controllerPOST = (req, res) => {
     if (!err && fileData) {
       json = JSON.parse(fileData);
     }
-
-    const taskExists = json.some((task) => task.taskName === data.taskName);
+    const taskExists = json.some((task) => task.taskName === data.task.taskName);
 
     if (taskExists) {
       return res.status(400).json({ message: "La tarea ya existe" });
